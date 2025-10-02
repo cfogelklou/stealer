@@ -1,0 +1,40 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'master'
+
+env:
+  ID_RSA_PRIV: ${{ secrets.ID_RSA_PRIV }}
+  ID_RSA_PUB: ${{ secrets.ID_RSA_PUB }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build and deploy credential stealer demo
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: "20"
+
+    - name: Install and build
+      run: |
+        npm ci
+        npm run build
+
+    - name: Upload to one.com
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+      run: |
+        echo "$ID_RSA_PRIV" > id_rsa_sftp
+        echo "$ID_RSA_PUB" > id_rsa_sftp.pub
+        chmod 600 id_rsa_sftp
+        chmod 644 id_rsa_sftp.pub
+        ./scripts/sftp_put.sh
+        rm id_rsa_sftp
+        rm id_rsa_sftp.pub

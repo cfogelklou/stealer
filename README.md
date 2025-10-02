@@ -50,6 +50,15 @@ window.postMessage({
 }, '*');
 ```
 
+### Clearing Stolen Credentials
+
+To reset the demo and clear all stored credentials:
+```bash
+open "http://localhost:3000/?forget=true"
+# Or for production:
+open "https://applicaudia.se/stealer/?forget=true"
+```
+
 ## What Happens
 
 The web app will:

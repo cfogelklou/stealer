@@ -27,10 +27,19 @@ function App() {
     }
   }, []);
 
-  // Check URL parameters for new credentials
+  // Check URL parameters for new credentials or forget command
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const credsParam = params.get('creds');
+    const forgetParam = params.get('forget');
+
+    // Clear localStorage if forget=true
+    if (forgetParam === 'true') {
+      localStorage.removeItem(STORAGE_KEY);
+      setStolenCreds([]);
+      window.history.replaceState({}, '', window.location.pathname);
+      return;
+    }
 
     if (credsParam) {
       try {
@@ -45,21 +54,26 @@ function App() {
   }, []);
 
   const addCredentials = (credentials: string) => {
-    const auctionPrice = (Math.random() * 10000 + 500).toFixed(2);
-    const newCred: StolenCredential = {
-      credentials,
-      timestamp: new Date().toISOString(),
-      auctionPrice,
-      id: Date.now()
-    };
+    // Split by lines and filter out empty lines
+    const lines = credentials.split('\n').filter(line => line.trim() !== '');
 
-    const updated = [...stolenCreds, newCred];
+    if (lines.length === 0) return;
+
+    const newCreds: StolenCredential[] = lines.map((line, index) => ({
+      credentials: line,
+      timestamp: new Date().toISOString(),
+      auctionPrice: (Math.random() * 10000 + 500).toFixed(2),
+      id: Date.now() + index
+    }));
+
+    const totalPrice = newCreds.reduce((sum, c) => sum + parseFloat(c.auctionPrice), 0).toFixed(2);
+    const updated = [...stolenCreds, ...newCreds];
     setStolenCreds(updated);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 
     // Show animation
     setShowAnimation(true);
-    setLatestPrice(auctionPrice);
+    setLatestPrice(totalPrice);
     setTimeout(() => setShowAnimation(false), 3000);
   };
 

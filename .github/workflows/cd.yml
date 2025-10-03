@@ -13,7 +13,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Build and deploy credential stealer demo
+    name: Build and deploy credential health-check demo
     steps:
 
     - uses: actions/checkout@v3

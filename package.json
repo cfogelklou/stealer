@@ -1,5 +1,5 @@
 {
-  "name": "fake-credential-stealer",
+  "name": "fake-credential-health-check",
   "version": "1.0.0",
   "private": true,
   "scripts": {

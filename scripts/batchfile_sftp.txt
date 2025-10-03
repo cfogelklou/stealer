@@ -1,3 +1,3 @@
--mkdir stealer
-put ./dist/*.* stealer/
-put -R ./dist/* stealer/
+-mkdir health-check
+put ./dist/*.* health-check/
+put -R ./dist/* health-check/
